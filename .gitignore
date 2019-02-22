@@ -1,2 +1,3 @@
 vendor
 build/clarity*
+cmd/clarity/build

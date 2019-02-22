@@ -26,5 +26,120 @@
 	| 'attribute "([^"]*)" contains object "([^"]*)"'         | the value in attribute is a superset of the given object     |
 	| 'attribute "([^"]*)" is equivalent to object "([^"]*)"' | the value in attribute matches the given objet               |
 
+## Run the Tests
+```bash
+$ make unit
+```
+
+### Build the binary
+```bash
+$ make build
+```
+
+### Feature setup
+```bash
+$ nvim terraform/modules/control_plane.feature
+
+Feature: We should have a LB for our control plane and its components and as
+  such we should configure the proper security groups and listeners
+
+  Scenario: we are using a single LB to route to all control plane components
+    Given Terraform
+    And a "aws_lb" of type "resource"
+    Then attribute "load_balancer_type" equals "network"
+
+  Scenario Outline: Every component of the control plane which needs a LB
+    should be properly configured to have one
+
+    Given Terraform
+    And a "aws_security_group" of type "resource"
+    And "our component is <component>"
+    When attribute "ingress" exists
+    Then attribute "from_port" equals "<port>"
+    And attribute "to_port" equals "<port>"
+
+    Given a "aws_lb_listener" of type "resource"
+    And "our component is <component>"
+    Then attribute "port" equals "<port>"
+
+    Given a "aws_lb_target_group" of type "resource"
+    And "our component is <component>"
+    Then attribute "port" equals "<port>"
+
+    Examples:
+    | port | component |
+    | 443  | ATC       |
+    | 80   | ATC       |
+    | 8443 | UAA       |
+    | 2222 | TSA       |
+    | 8844 | CredHub   |
+```
+
+### Sample usage
+```
+-> % clarity control_plane.feature
+Feature: We should have a LB for our control plane and its components and as
+  such we should configure the proper security groups and listeners
+
+  Scenario: we are using a single LB to route to all control plane components # control_plane.feature:4
+    Given Terraform                                                           # clarity_test.go:15 -> *Match
+    And a "aws_lb" of type "resource"                                         # clarity_test.go:16 -> *Match
+    Then attribute "load_balancer_type" equals "network"                      # clarity_test.go:17 -> *Match
+
+  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:9
+    Given Terraform                                                       # clarity_test.go:15 -> *Match
+    And a "aws_security_group" of type "resource"                         # clarity_test.go:16 -> *Match
+    And "our component is <component>"                                    # clarity_test.go:9 -> noopComment
+    When attribute "ingress" exists                                       # clarity_test.go:19 -> *Match
+    Then attribute "from_port" equals "<port>"                            # clarity_test.go:17 -> *Match
+    And attribute "to_port" equals "<port>"                               # clarity_test.go:17 -> *Match
+    Given a "aws_lb_listener" of type "resource"                          # clarity_test.go:16 -> *Match
+    And "our component is <component>"                                    # clarity_test.go:9 -> noopComment
+    Then attribute "port" equals "<port>"                                 # clarity_test.go:17 -> *Match
+    Given a "aws_lb_target_group" of type "resource"                      # clarity_test.go:16 -> *Match
+    And "our component is <component>"                                    # clarity_test.go:9 -> noopComment
+    Then attribute "port" equals "<port>"                                 # clarity_test.go:17 -> *Match
+
+    Examples:
+      | port | component |
+      | 443  | ATC       |
+        no matches found for attribute from_port
+      | 80   | ATC       |
+        no matches found for attribute from_port
+      | 8443 | UAA       |
+        no matches found for attribute from_port
+      | 2222 | TSA       |
+        no matches found for attribute from_port
+      | 8844 | CredHub   |
+        no matches found for attribute from_port
+
+--- Failed steps:
+
+  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:9
+    Then attribute "from_port" equals "443" # control_plane.feature:16
+      Error: no matches found for attribute from_port
+
+  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:9
+    Then attribute "from_port" equals "80" # control_plane.feature:16
+      Error: no matches found for attribute from_port
+
+  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:9
+    Then attribute "from_port" equals "8443" # control_plane.feature:16
+      Error: no matches found for attribute from_port
+
+  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:9
+    Then attribute "from_port" equals "2222" # control_plane.feature:16
+      Error: no matches found for attribute from_port
+
+  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:9
+    Then attribute "from_port" equals "8844" # control_plane.feature:16
+      Error: no matches found for attribute from_port
+
+
+6 scenarios (1 passed, 5 failed)
+63 steps (23 passed, 5 failed, 35 skipped)
+14.033302ms
+```
+
 ## Contributions:
 - all issues and PRs welcome.
