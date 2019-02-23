@@ -1,14 +1,15 @@
 package matchers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/DATA-DOG/godog"
 	"github.com/hashicorp/hcl"
 )
 
@@ -112,7 +113,8 @@ func flattenArrayMap(listOfMaps []map[string]interface{}) map[string]interface{}
 func (m *Match) AOfTypeNamed(providerFeature, providerFeatureType, instanceName string) error {
 	matchingFeature, err := matchingFeatures(providerFeature, providerFeatureType, m.HCLEntries)
 	if err != nil {
-		return fmt.Errorf("matching features failed: %v", err)
+		entries, _ := json.Marshal(m.HCLEntries)
+		return fmt.Errorf("no matches found for %v \n %v", providerFeature, string(entries))
 	}
 
 	matchingFeatureByInstanceName := make([]HCLEntry, 0)
@@ -131,7 +133,8 @@ func (m *Match) AOfTypeNamed(providerFeature, providerFeatureType, instanceName 
 func (m *Match) AOfType(providerFeature, providerFeatureType string) error {
 	matchingFeature, err := matchingFeatures(providerFeature, providerFeatureType, m.HCLEntries)
 	if err != nil {
-		return fmt.Errorf("matching features failed: %v", err)
+		entries, _ := json.Marshal(m.HCLEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", providerFeature, string(entries))
 	}
 
 	m.MatchingEntries = append(m.MatchingEntries, matchingFeature...)
@@ -167,7 +170,8 @@ func (m *Match) AttributeExists(searchKey string) error {
 	}
 
 	if len(tmpEntries) < 1 {
-		return fmt.Errorf("no matches found for attribute %s", searchKey)
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", searchKey, string(entries))
 	}
 	m.MatchingEntries = tmpEntries
 	return nil
@@ -200,7 +204,8 @@ func (m *Match) AttributeEquals(searchKey, searchValue string) error {
 	}
 
 	if len(tmpEntries) < 1 {
-		return fmt.Errorf("no matches found for attribute %s", searchKey)
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", searchValue, string(entries))
 	}
 	m.MatchingEntries = tmpEntries
 	return nil
@@ -222,7 +227,8 @@ func (m *Match) AttributeDoesNotEqual(searchKey, searchValue string) error {
 	}
 
 	if len(tmpEntries) < 1 {
-		return fmt.Errorf("no matches found for attribute %s", searchKey)
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", searchValue, string(entries))
 	}
 	m.MatchingEntries = tmpEntries
 	return nil
@@ -252,7 +258,8 @@ func (m *Match) AttributeGreaterThan(searchKey string, searchValue int) error {
 	}
 
 	if len(tmpEntries) < 1 {
-		return fmt.Errorf("no matches found for attribute %s", searchKey)
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", searchValue, string(entries))
 	}
 	m.MatchingEntries = tmpEntries
 	return nil
@@ -282,7 +289,8 @@ func (m *Match) AttributeLessThan(searchKey string, searchValue int) error {
 	}
 
 	if len(tmpEntries) < 1 {
-		return fmt.Errorf("no matches found for attribute %s", searchKey)
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", searchValue, string(entries))
 	}
 	m.MatchingEntries = tmpEntries
 	return nil
@@ -293,32 +301,56 @@ func (m *Match) ItOccursAtLeastTimes(count int) error {
 	if len(m.MatchingEntries) >= count {
 		return nil
 	}
-	return fmt.Errorf("did not find enough matching occurances")
+	entries, _ := json.Marshal(m.MatchingEntries)
+	return fmt.Errorf("no matches found for attribute %v \n %v", count, string(entries))
 }
 
-// ItOccursAtLeastTimes - will check how many results are in our filter and make sure we have at most that
-func (m *Match) ItOccursAtMostTimes(arg1 string) error {
-	return godog.ErrPending
+// ItOccursAtMostTimes - will check how many results are in our filter and make sure we have at most that
+func (m *Match) ItOccursAtMostTimes(count int) error {
+	if len(m.MatchingEntries) <= count {
+		return nil
+	}
+	entries, _ := json.Marshal(m.MatchingEntries)
+	return fmt.Errorf("no matches found for attribute %v \n %v", count, string(entries))
 }
 
-// ItOccursAtLeastTimes - will check how many results are in our filter and make sure we have at exactly that
-func (m *Match) ItOccursExactlyTimes(arg1 string) error {
-	return godog.ErrPending
-}
-
-func (m *Match) AttributeContainsObject(arg1, arg2 string) error {
-	return nil
-}
-
-func (m *Match) AttributeContainedInObject(arg1, arg2 string) error {
-	return godog.ErrPending
-}
-
-func (m *Match) AttributeEquivalentToObject(arg1, arg2 string) error {
-	return godog.ErrPending
+// ItOccursExactlyTimes - will check how many results are in our filter and make sure we have at exactly that
+func (m *Match) ItOccursExactlyTimes(count int) error {
+	if len(m.MatchingEntries) == count {
+		return nil
+	}
+	entries, _ := json.Marshal(m.MatchingEntries)
+	return fmt.Errorf("no matches found for attribute %v \n %v", count, string(entries))
 }
 
 // AttributeRegex - will use a regex to see if attributes value is a match
-func (m *Match) AttributeRegex(arg1, arg2 string) error {
-	return godog.ErrPending
+func (m *Match) AttributeRegex(attributeName, regexString string) error {
+	var tmpEntries []HCLEntry
+	if len(m.MatchingEntries) < 1 {
+		return fmt.Errorf("no references to find attributes in")
+	}
+
+	for _, entry := range m.MatchingEntries {
+		exists, attributeValue := attributeExists(attributeName, entry.Attributes.([]map[string]interface{}))
+		if !exists {
+			return fmt.Errorf("no attribute found named: %s", attributeName)
+		}
+
+		actualValue, err := json.Marshal(attributeValue)
+		if err != nil {
+			return fmt.Errorf("unmarshaling json failed: %v", err)
+		}
+
+		var validAttributeValue = regexp.MustCompile(regexString)
+		if validAttributeValue.MatchString(string(actualValue)) {
+			tmpEntries = append(tmpEntries, entry)
+		}
+	}
+
+	if len(tmpEntries) < 1 {
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %s \n %v", attributeName, string(entries))
+	}
+	m.MatchingEntries = tmpEntries
+	return nil
 }

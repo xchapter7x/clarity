@@ -32,10 +32,8 @@ Feature: In order to test out syntax desired from
     And it occurs exactly 2 times
     Then attribute "blah" equals "1234"
     And attribute "blah" does not equal "1234"
-    And attribute "blah" is contained in object "{blah: bee}"
-    And attribute "blah" contains object "{blah: bee}"
-    And attribute "blah" is equivalent to object "{blah: bee}"
     And attribute "blah" matches regex "bleh"
+    And attribute "blah" matches regex "hi.*there"
 
   Scenario: We would like our resources to be able to talk to things on the internet
     Given Terraform

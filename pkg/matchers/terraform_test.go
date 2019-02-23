@@ -107,6 +107,69 @@ func TestMatchers(t *testing.T) {
 		})
 	})
 
+	t.Run("m.ItOccursAtMostTimes", func(t *testing.T) {
+		t.Run("when we have too many to satisfy at most", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("blah_blah", "resource")
+			Expect(m.ItOccursAtMostTimes(0)).To(HaveOccurred())
+		})
+		t.Run("when we have enough to satisfy at most", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("blah_blah", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.ItOccursAtMostTimes(3)).NotTo(HaveOccurred())
+		})
+	})
+
+	t.Run("m.ItOccursExactlyTimes", func(t *testing.T) {
+		t.Run("when we dont have exactly the count", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("blah_blah", "resource")
+			Expect(m.ItOccursExactlyTimes(2)).To(HaveOccurred())
+		})
+		t.Run("when we have exactly the count", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("blah_blah", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.ItOccursExactlyTimes(1)).NotTo(HaveOccurred())
+		})
+	})
+
+	t.Run("m.AttributeRegex", func(t *testing.T) {
+		t.Run("when we do not have a attr value which satisfies the regex", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("blah_blah", "resource")
+			Expect(m.AttributeRegex("port", "abc")).To(HaveOccurred())
+		})
+		t.Run("when our attribute value satisfies the regex", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("blah_blah", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeRegex("port", "8*")).NotTo(HaveOccurred())
+		})
+		t.Run("when our attribute is a complex object and it satisfies the regex", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfTypeNamed("google_compute_firewall", "resource", "allow-all-internal")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeExists("allow")).NotTo(HaveOccurred())
+			Expect(m.AttributeRegex("allow", "protocol.*tcp")).NotTo(HaveOccurred())
+		})
+	})
+
 	t.Run("m.AttributeLessThan", func(t *testing.T) {
 		t.Run("when there are no matches", func(t *testing.T) {
 			m := &matchers.Match{}
