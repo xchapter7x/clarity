@@ -15,7 +15,7 @@ jobs:
       - run: go get github.com/DATA-DOG/godog/cmd/godog && sudo mv /go/bin/godog /usr/local/bin/.
       - run: dep ensure
       - run: make unit
-      - run: PATH=${PATH}:/go/bin sudo make build
+      - run: make build
       - persist_to_workspace:
           root: bin
           paths:
