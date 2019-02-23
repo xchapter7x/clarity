@@ -15,7 +15,7 @@ jobs:
       - run: go get github.com/DATA-DOG/godog/cmd/godog
       - run: dep ensure
       - run: make unit
-      - run: make build
+      - run: PATH=${PATH}:/home/circleci/go/bin make build
       - persist_to_workspace:
           root: bin
           paths:
