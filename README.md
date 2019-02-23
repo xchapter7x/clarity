@@ -26,9 +26,6 @@
 	| 'attribute "([^"]*)" matches regex "([^"]*)"'           | matches the attributes value on the given regex              |
 	| 'attribute "([^"]*)" is greater than (\d+)'             | matches on gt against the given value and attr value         |
 	| 'attribute "([^"]*)" is less than (\d+)'                | matches on lt against the given value and attr value         |
-	| 'attribute "([^"]*)" is contained in object "([^"]*)"'  | the value in attribute is a subset of the given object       |
-	| 'attribute "([^"]*)" contains object "([^"]*)"'         | the value in attribute is a superset of the given object     |
-	| 'attribute "([^"]*)" is equivalent to object "([^"]*)"' | the value in attribute matches the given objet               |
 
 ## Run the Tests
 ```bash
