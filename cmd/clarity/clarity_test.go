@@ -24,7 +24,4 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^a "([^"]*)" of type "([^"]*)" named "([^"]*)"$`, match.AOfTypeNamed)
 	s.Step(`^attribute "([^"]*)" is greater than (\d+)$`, match.AttributeGreaterThan)
 	s.Step(`^attribute "([^"]*)" is less than (\d+)$`, match.AttributeLessThan)
-	s.Step(`^attribute "([^"]*)" is contained in object "([^"]*)"$`, match.AttributeContainedInObject)
-	s.Step(`^attribute "([^"]*)" contains object "([^"]*)"$`, match.AttributeContainsObject)
-	s.Step(`^attribute "([^"]*)" is equivalent to object "([^"]*)"$`, match.AttributeEquivalentToObject)
 }
