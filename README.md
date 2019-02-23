@@ -8,6 +8,9 @@
 - provides its own matchers and hcl parser
 - must be run from the directory where your terraform files live
 
+## Download Binaries
+[HERE](https://github.com/xchapter7x/clarity/releases/latest)
+
 ### gherkin steps
 	| '([^"]*)'                                               | noop to insert context into behavior def                     |
 	| 'Terraform'                                             | parses the terraform from your local dir                     |
