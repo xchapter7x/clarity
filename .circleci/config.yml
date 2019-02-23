@@ -1,0 +1,45 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:latest
+    working_directory: /go/src/github.com/xchapter7x/clarity
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: go get -u github.com/maxbrunsfeld/counterfeiter
+      - run: dep ensure
+      - run: make unit
+      - run: make build
+      - persist_to_workspace:
+          root: bin
+          paths:
+            - create_new_release.sh
+      - persist_to_workspace:
+          root: build
+          paths:
+            - clarity.exe
+            - clarity_osx
+            - clarity_unix
+  release:
+    docker:
+      - image: socialengine/github-release
+    working_directory: /go/src/github.com/xchapter7x/clarity
+    steps:
+      - attach_workspace:
+          at: bin
+      - attach_workspace:
+          at: build
+      - run: ./bin/create_new_release.sh
+workflows:
+  version: 2
+  build-and-release:
+    jobs:
+      - build
+      - release:
+          requires:
+            - build
