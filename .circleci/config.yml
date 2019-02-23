@@ -6,7 +6,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:latest
-    working_directory: /home/circleci/go/src/github.com/xchapter7x/clarity
+    working_directory: /go/src/github.com/xchapter7x/clarity
     steps:
       - checkout
       - setup_remote_docker:
@@ -15,7 +15,7 @@ jobs:
       - run: go get github.com/DATA-DOG/godog/cmd/godog
       - run: dep ensure
       - run: make unit
-      - run: PATH=${PATH}:/home/circleci/go/bin make build
+      - run: sudo make build
       - persist_to_workspace:
           root: bin
           paths:
