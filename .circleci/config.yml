@@ -6,7 +6,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:latest
-    working_directory: /go/src/github.com/xchapter7x/clarity
+    working_directory: ~/go/src/github.com/xchapter7x/clarity
     steps:
       - checkout
       - setup_remote_docker:
