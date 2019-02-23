@@ -17,6 +17,7 @@ jobs:
       - run: dep ensure
       - run: make unit
       - run: make build
+      - run: mv cmd/clarity/build build
       - persist_to_workspace:
           root: bin
           paths:
