@@ -30,15 +30,15 @@ dep:
 	go get -u github.com/golang/dep/cmd/dep
 	dep ensure
 build-darwin: 
-	pushd ./cmd/clarity && \
+	cd ./cmd/clarity && \
 	mkdir -p $(BINARY_DIR) && \
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GODOG) -output $(BINARY_DIR)/$(BINARY_DARWIN)
 build-win:
-	pushd ./cmd/clarity && \
+	cd ./cmd/clarity && \
 	mkdir -p $(BINARY_DIR) && \
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GODOG) -output $(BINARY_DIR)/$(BINARY_WIN)
 build-linux:
-	pushd ./cmd/clarity && \
+	cd ./cmd/clarity && \
 	mkdir -p $(BINARY_DIR) && \
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GODOG) -output $(BINARY_DIR)/$(BINARY_UNIX)
 release:
