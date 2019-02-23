@@ -1,4 +1,5 @@
 # Clarity
+[![CircleCI](https://circleci.com/gh/xchapter7x/clarity.svg?style=svg)](https://circleci.com/gh/xchapter7x/clarity)
 
 ## A declaritive test framewark for Terraform
 - reason: B/c unit testing terraform needs to be a thing
