@@ -6,11 +6,12 @@ jobs:
   build:
     docker:
       - image: circleci/golang:latest
-    working_directory: /usr/local/go/src/github.com/xchapter7x/clarity
+    working_directory: /go/src/github.com/xchapter7x/clarity
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+      - run: cd ~ && pwd
       - run: go get -u github.com/maxbrunsfeld/counterfeiter
       - run: go get github.com/DATA-DOG/godog/cmd/godog
       - run: dep ensure
