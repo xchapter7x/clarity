@@ -12,7 +12,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run: go get -u github.com/maxbrunsfeld/counterfeiter
-      - run: go get github.com/DATA-DOG/godog/cmd/godog
+      - run: go get github.com/DATA-DOG/godog/cmd/godog && mv /go/bin/godog /usr/local/bin/.
       - run: dep ensure
       - run: make unit
       - run: PATH=${PATH}:/go/bin sudo make build
