@@ -18,8 +18,50 @@ $ export OS="osx" #(osx | unix)
 $ curl -sL https://github.com/xchapter7x/clarity/releases/download/${VERSION}/clarity_${OS} -o /usr/local/bin/clarity && chmod +x /usr/local/bin/clarity
 ```
 
-## Download Binaries
+### Download Binaries
 [HERE](https://github.com/xchapter7x/clarity/releases/latest)
+
+### CLI Options
+
+```
+-> % clarity --help
+Usage:
+  godog [options] [<features>]
+
+Builds a test package and runs given feature files.
+Command should be run from the directory of tested package and contain buildable go source.
+
+Arguments:
+  features             Optional feature(s) to run. Can be:
+                           - dir (features/)
+                           - feature (*.feature)
+                           - scenario at specific line (*.feature:10)
+                       If no feature paths are listed, suite tries features path by default.
+
+Options:
+  -c, --concurrency=1  Run the test suite with concurrency level:
+                           - = 1: supports all types of formats.
+                           - >= 2: only supports progress. Note, that
+                           your context needs to support parallel execution.
+  -d, --definitions    Print all available step definitions.
+  -f, --format=pretty  How to format tests output. Built-in formats:
+                           - events: Produces JSON event stream, based on spec: 0.1.0.
+                           - junit: Prints junit compatible xml to stdout
+                           - pretty: Prints every feature with runtime statuses.
+                           - progress: Prints a character per step.
+                           - cucumber: Produces cucumber JSON format output.
+  --no-colors          Disable ansi colors.
+  --random[=SEED]      Randomly shuffle the scenario execution order.
+                       Specify SEED to reproduce the shuffling from a previous run.
+                           e.g. --random or --random=5738
+  --stop-on-failure    Stop processing on first failed scenario.
+  --strict             Fail suite when there are pending or undefined steps.
+  -t, --tags=          Filter scenarios by tags. Expression can be:
+                           - "@wip": run all scenarios with wip tag
+                           - "~@wip": exclude all scenarios with wip tag
+                           - "@wip && ~@new": run wip scenarios, but exclude new
+                           - "@wip,@undone": run wip or undone scenarios
+```
 
 ### Writting your terraform tests
 
