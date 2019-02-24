@@ -9,6 +9,14 @@
 - provides its own matchers and hcl parser
 - must be run from the directory where your terraform files live
 
+## Install
+
+```bash
+$ export VERSION="v0.1.0"
+$ export OS="osx" #(osx | unix)
+$ curl -sL https://github.com/xchapter7x/clarity/releases/download/${VERSION}/clarity_${OS} -o /usr/local/bin/clarity && chmod +x /usr/local/bin/clarity
+```
+
 ## Download Binaries
 [HERE](https://github.com/xchapter7x/clarity/releases/latest)
 
