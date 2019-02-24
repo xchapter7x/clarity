@@ -14,6 +14,8 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^"([^"]*)"$`, noopComment)
 	s.Step(`^Terraform$`, match.Terraform)
 	s.Step(`^a "([^"]*)" of type "([^"]*)"$`, match.AOfType)
+	s.Step(`^attribute "([^"]*)" equals (\d+)$`, match.AttributeEqualsInt)
+	s.Step(`^attribute "([^"]*)" does not equal (\d+)$`, match.AttributeDoesNotEqualInt)
 	s.Step(`^attribute "([^"]*)" equals "([^"]*)"$`, match.AttributeEquals)
 	s.Step(`^attribute "([^"]*)" does not equal "([^"]*)"$`, match.AttributeDoesNotEqual)
 	s.Step(`^attribute "([^"]*)" exists$`, match.AttributeExists)

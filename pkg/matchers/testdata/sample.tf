@@ -7,6 +7,10 @@ resource "blah_blah" "new_thing" {
   port = "80"
 }
 
+resource "foo" "bar" {
+  port = 80
+}
+
 resource "google_compute_network" "my-custom-network" {
   name = "my-custom-network"
 }

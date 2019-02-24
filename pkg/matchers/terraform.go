@@ -188,6 +188,52 @@ func attributeExists(searchName string, attributes []map[string]interface{}) (bo
 	return false, nil
 }
 
+// AttributeEqualsInt will filter on a full match of key value or it will
+// return an error
+func (m *Match) AttributeEqualsInt(searchKey string, searchValue int) error {
+	var tmpEntries []HCLEntry
+	if len(m.MatchingEntries) < 1 {
+		return fmt.Errorf("no references to find attributes in")
+	}
+
+	for _, entry := range m.MatchingEntries {
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		if exists && attributeValue == searchValue {
+			tmpEntries = append(tmpEntries, entry)
+		}
+	}
+
+	if len(tmpEntries) < 1 {
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", searchValue, string(entries))
+	}
+	m.MatchingEntries = tmpEntries
+	return nil
+}
+
+// AttributeDoesNotEqualInt will filter on a full match of key value or it will
+// return an error
+func (m *Match) AttributeDoesNotEqualInt(searchKey string, searchValue int) error {
+	var tmpEntries []HCLEntry
+	if len(m.MatchingEntries) < 1 {
+		return fmt.Errorf("no references to find attributes in")
+	}
+
+	for _, entry := range m.MatchingEntries {
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		if exists && attributeValue != searchValue {
+			tmpEntries = append(tmpEntries, entry)
+		}
+	}
+
+	if len(tmpEntries) < 1 {
+		entries, _ := json.Marshal(m.MatchingEntries)
+		return fmt.Errorf("no matches found for attribute %v \n %v", searchValue, string(entries))
+	}
+	m.MatchingEntries = tmpEntries
+	return nil
+}
+
 // AttributeEquals will filter on a full match of key value or it will
 // return an error
 func (m *Match) AttributeEquals(searchKey, searchValue string) error {
@@ -246,10 +292,16 @@ func (m *Match) AttributeGreaterThan(searchKey string, searchValue int) error {
 		if !exists {
 			return fmt.Errorf("no attribute found named: %s", searchKey)
 		}
-
-		actualValue, err := strconv.Atoi(attributeValue.(string))
-		if err != nil {
-			return fmt.Errorf("could not translate to int: %v", err)
+		var actualValue int
+		switch attributeValue := attributeValue.(type) {
+		case string:
+			var err error
+			actualValue, err = strconv.Atoi(attributeValue)
+			if err != nil {
+				return fmt.Errorf("could not translate to int: %v", err)
+			}
+		case int:
+			actualValue = attributeValue
 		}
 
 		if exists && actualValue > searchValue {
@@ -278,9 +330,16 @@ func (m *Match) AttributeLessThan(searchKey string, searchValue int) error {
 			return fmt.Errorf("no attribute found named: %s", searchKey)
 		}
 
-		actualValue, err := strconv.Atoi(attributeValue.(string))
-		if err != nil {
-			return fmt.Errorf("could not translate to int: %v", err)
+		var actualValue int
+		switch attributeValue := attributeValue.(type) {
+		case string:
+			var err error
+			actualValue, err = strconv.Atoi(attributeValue)
+			if err != nil {
+				return fmt.Errorf("could not translate to int: %v", err)
+			}
+		case int:
+			actualValue = attributeValue
 		}
 
 		if exists && actualValue < searchValue {

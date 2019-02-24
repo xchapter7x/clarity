@@ -85,6 +85,16 @@ func TestMatchers(t *testing.T) {
 			err = m.AOfType("blah_blah", "resource")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(m.AttributeGreaterThan("port", 79)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchIntString()))
+		})
+
+		t.Run("when there are matches with a correct value and the attr value is a int type", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeGreaterThan("port", 79)).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
 		})
 	})
@@ -196,6 +206,76 @@ func TestMatchers(t *testing.T) {
 			err = m.AOfType("blah_blah", "resource")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(m.AttributeLessThan("port", 81)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchIntString()))
+		})
+
+		t.Run("when there are matches with a correct value and attr value is type int", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeLessThan("port", 81)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
+		})
+	})
+
+	t.Run("m.AttributeEqualsInt", func(t *testing.T) {
+		t.Run("when there are no matches", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeEqualsInt("bbbbbasdf", 0)).To(HaveOccurred())
+		})
+
+		t.Run("when a valid attribute has non equal value", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeEqualsInt("port", 43)).To(HaveOccurred())
+		})
+
+		t.Run("when there are matches with a correct value", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeEqualsInt("port", 80)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
+		})
+	})
+
+	t.Run("m.AttributeDoesNotEqualInt", func(t *testing.T) {
+		t.Run("when there are no matches", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeDoesNotEqualInt("bbbbbasdf", 0)).To(HaveOccurred())
+		})
+
+		t.Run("when a valid attribute has non equal value", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeDoesNotEqualInt("port", 80)).To(HaveOccurred())
+		})
+
+		t.Run("when there are matches with a correct value", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("foo", "resource")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeDoesNotEqualInt("port", 81)).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
 		})
 	})
@@ -277,6 +357,21 @@ func controlInstanceMatch() []matchers.HCLEntry {
 }
 
 func controlInstanceMatchInt() []matchers.HCLEntry {
+	return []matchers.HCLEntry{
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "foo",
+			InstanceName:  "bar",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"port": 80,
+				},
+			},
+		},
+	}
+}
+
+func controlInstanceMatchIntString() []matchers.HCLEntry {
 	return []matchers.HCLEntry{
 		matchers.HCLEntry{
 			HCLType:       "resource",
