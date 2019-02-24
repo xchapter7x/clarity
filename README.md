@@ -20,34 +20,14 @@ $ curl -sL https://github.com/xchapter7x/clarity/releases/download/${VERSION}/cl
 ## Download Binaries
 [HERE](https://github.com/xchapter7x/clarity/releases/latest)
 
-### gherkin steps
-	| '([^"]*)'                                               | noop to insert context into behavior def                     |
-	| 'Terraform'                                             | parses the terraform from your local dir                     |
-	| 'a "([^"]*)" of type "([^"]*)"'                         | matches on types such as resource,data and the resource name |
-	| 'a "([^"]*)" of type "([^"]*)" named "([^"]*)"'         | matches on types, resource names and instance names          |
-	| 'attribute "([^"]*)" equals "([^"]*)"'                  | matches on the value given and the value of the attribute    |
-	| 'attribute "([^"]*)" does not equal "([^"]*)"'          | inverse match on attr value and given value                  |
-	| 'attribute "([^"]*)" exists'                            | if the given attribute exists in the matching objects        |
-	| 'it occurs at least (\d+) times'                        | if the match set contains at least the given number          |
-	| 'it occurs at most (\d+) times'                         | if the match set contains at most the given number           |
-	| 'it occurs exactly (\d+) times'                         | if the match set continas exactly the given number           |
-	| 'attribute "([^"]*)" matches regex "([^"]*)"'           | matches the attributes value on the given regex              |
-	| 'attribute "([^"]*)" is greater than (\d+)'             | matches on gt against the given value and attr value         |
-	| 'attribute "([^"]*)" is less than (\d+)'                | matches on lt against the given value and attr value         |
+### Writting your terraform tests
 
-## Run the Tests
-```bash
-$ make unit
-```
-
-### Build the binary
-```bash
-$ make build
-```
-
-### Feature setup
+Simply put a .feature file in the directory where the terraform you wish to test resides
 ```gherkin
-$ nvim terraform/modules/control_plane.feature
+$ ls
+control_plane.feature dns.tf                lb.tf                 network.tf            outputs.tf            variables.tf
+
+$ cat terraform/modules/control_plane.feature
 
 Feature: We should have a LB for our control plane and its components and as
   such we should configure the proper security groups and listeners
@@ -86,7 +66,9 @@ Feature: We should have a LB for our control plane and its components and as
     | 8844 | CredHub   |
 ```
 
-### Sample usage
+### Running your terraform tests
+
+Use the clarity cli to run any feature files you wish
 ```bash
 -> % clarity control_plane.feature
 Feature: We should have a LB for our control plane and its components and as
@@ -126,5 +108,33 @@ Feature: We should have a LB for our control plane and its components and as
 35.282446ms
 ```
 
-## Contributions:
+### gherkin step matchers available
+	| '([^"]*)'                                               | noop to insert context into behavior def                     |
+	| 'Terraform'                                             | parses the terraform from your local dir                     |
+	| 'a "([^"]*)" of type "([^"]*)"'                         | matches on types such as resource,data and the resource name |
+	| 'a "([^"]*)" of type "([^"]*)" named "([^"]*)"'         | matches on types, resource names and instance names          |
+	| 'attribute "([^"]*)" equals (\d+)'                      | matches on the value given and the value of the attribute    |
+	| 'attribute "([^"]*)" does not equal (\d+)'              | inverse match on attr value and given value                  |
+	| 'attribute "([^"]*)" equals "([^"]*)"'                  | matches on the value given and the value of the attribute    |
+	| 'attribute "([^"]*)" does not equal "([^"]*)"'          | inverse match on attr value and given value                  |
+	| 'attribute "([^"]*)" exists'                            | if the given attribute exists in the matching objects        |
+	| 'it occurs at least (\d+) times'                        | if the match set contains at least the given number          |
+	| 'it occurs at most (\d+) times'                         | if the match set contains at most the given number           |
+	| 'it occurs exactly (\d+) times'                         | if the match set continas exactly the given number           |
+	| 'attribute "([^"]*)" matches regex "([^"]*)"'           | matches the attributes value on the given regex              |
+	| 'attribute "([^"]*)" is greater than (\d+)'             | matches on gt against the given value and attr value         |
+	| 'attribute "([^"]*)" is less than (\d+)'                | matches on lt against the given value and attr value         |
+
+## Development & Contributions:
 - all issues and PRs welcome.
+
+
+### Run the Tests
+```bash
+$ make unit
+```
+
+### Build the binary
+```bash
+$ make build
+```
