@@ -36,6 +36,7 @@ Feature: We should have a LB for our control plane and its components and as
     Given Terraform
     And a "aws_lb" of type "resource"
     Then attribute "load_balancer_type" equals "network"
+    And it occurs exactly 1 times
 
   Scenario Outline: Every component of the control plane which needs a LB
     should be properly configured to have one
@@ -78,8 +79,9 @@ Feature: We should have a LB for our control plane and its components and as
     Given Terraform                                                           # clarity_test.go:15 -> *Match
     And a "aws_lb" of type "resource"                                         # clarity_test.go:16 -> *Match
     Then attribute "load_balancer_type" equals "network"                      # clarity_test.go:19 -> *Match
+    And it occurs exactly 1 times                                             # clarity_test.go:24 -> *Match
 
-  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:9
+  Scenario Outline: Every component of the control plane which needs a LB # control_plane.feature:10
     Given Terraform                                                       # clarity_test.go:15 -> *Match
     And a "aws_security_group" of type "resource"                         # clarity_test.go:16 -> *Match
     And "our component is <component>"                                    # clarity_test.go:9 -> noopComment
@@ -104,8 +106,8 @@ Feature: We should have a LB for our control plane and its components and as
       | 8844 | CredHub   |
 
 6 scenarios (6 passed)
-73 steps (73 passed)
-35.282446ms
+74 steps (74 passed)
+35.093777ms
 ```
 
 ### gherkin step matchers available
