@@ -8,6 +8,7 @@
 - its gherkin bdd inspired
 - provides its own matchers and hcl parser
 - must be run from the directory where your terraform files live
+- its a wrapper on [godog](https://github.com/DATA-DOG/godog), which provides built in terraform specific steps
 
 ## Install
 
