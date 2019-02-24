@@ -5,6 +5,7 @@
 - reason: B/c unit testing terraform needs to be a thing
 
 ## Info:
+- its a single binary, thats it. no need to write steps or go code. just write a declarative feature file.
 - its gherkin bdd inspired
 - provides its own matchers and hcl parser
 - must be run from the directory where your terraform files live
