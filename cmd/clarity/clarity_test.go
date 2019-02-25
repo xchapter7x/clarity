@@ -26,4 +26,7 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^a "([^"]*)" of type "([^"]*)" named "([^"]*)"$`, match.AOfTypeNamed)
 	s.Step(`^attribute "([^"]*)" is greater than (\d+)$`, match.AttributeGreaterThan)
 	s.Step(`^attribute "([^"]*)" is less than (\d+)$`, match.AttributeLessThan)
+	s.BeforeScenario(func(interface{}) {
+		match = matchers.NewMatch()
+	})
 }
