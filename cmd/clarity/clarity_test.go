@@ -9,9 +9,14 @@ func noopComment(arg1 string) error {
 	return nil
 }
 
+func markPending(arg1 string) error {
+	return godog.ErrPending
+}
+
 func FeatureContext(s *godog.Suite) {
 	match := matchers.NewMatch()
 	s.Step(`^"([^"]*)"$`, noopComment)
+	s.Step(`^pending "([^"]*)"$`, markPending)
 	s.Step(`^Terraform$`, match.Terraform)
 	s.Step(`^a "([^"]*)" of type "([^"]*)"$`, match.AOfType)
 	s.Step(`^attribute "([^"]*)" equals (\d+)$`, match.AttributeEqualsInt)
