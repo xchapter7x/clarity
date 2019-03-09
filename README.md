@@ -14,7 +14,7 @@
 ## Install
 
 ```bash
-$ export VERSION="v0.3.0"
+$ export VERSION="v0.4.0"
 $ export OS="osx" #(osx | unix)
 $ curl -sL https://github.com/xchapter7x/clarity/releases/download/${VERSION}/clarity_${OS} -o /usr/local/bin/clarity && chmod +x /usr/local/bin/clarity
 ```
