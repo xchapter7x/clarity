@@ -33,25 +33,38 @@ func parseHCL(rawHCL map[string]interface{}) []HCLEntry {
 	hclEntries := make([]HCLEntry, 0)
 	for hclType, componentsArrayMap := range rawHCL {
 		for _, componentsMap := range componentsArrayMap.([]map[string]interface{}) {
-			for componentName, instancesFormatted := range componentsMap {
-				switch instancesCast := instancesFormatted.(type) {
-				case []map[string]interface{}:
-					instances := flattenArrayMap(instancesCast)
-					for instanceName, attributes := range instances {
-						hclEntries = append(hclEntries, HCLEntry{
-							HCLType:       hclType,
-							ComponentName: componentName,
-							InstanceName:  instanceName,
-							Attributes:    attributes,
-						})
-					}
-				default:
+			hclEntries = addComponentsToEntries(hclEntries, hclType, componentsMap)
+		}
+	}
+	return hclEntries
+}
+
+func addComponentsToEntries(hclEntries []HCLEntry, hclType string, componentsMap map[string]interface{}) []HCLEntry {
+	for componentName, instancesFormatted := range componentsMap {
+		if hclType == "output" || hclType == "module" || hclType == "provider" {
+			hclEntries = append(hclEntries, HCLEntry{
+				HCLType:       hclType,
+				ComponentName: componentName,
+				Attributes:    instancesFormatted,
+			})
+		} else {
+			switch instancesCast := instancesFormatted.(type) {
+			case []map[string]interface{}:
+				instances := flattenArrayMap(instancesCast)
+				for instanceName, attributes := range instances {
 					hclEntries = append(hclEntries, HCLEntry{
-						HCLType:      hclType,
-						InstanceName: componentName,
-						Attributes:   instancesCast,
+						HCLType:       hclType,
+						ComponentName: componentName,
+						InstanceName:  instanceName,
+						Attributes:    attributes,
 					})
 				}
+			default:
+				hclEntries = append(hclEntries, HCLEntry{
+					HCLType:      hclType,
+					InstanceName: componentName,
+					Attributes:   instancesCast,
+				})
 			}
 		}
 	}
@@ -163,7 +176,7 @@ func (m *Match) AttributeExists(searchKey string) error {
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, _ := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		exists, _ := attributeExists(searchKey, entry.Attributes)
 		if exists {
 			tmpEntries = append(tmpEntries, entry)
 		}
@@ -177,11 +190,14 @@ func (m *Match) AttributeExists(searchKey string) error {
 	return nil
 }
 
-func attributeExists(searchName string, attributes []map[string]interface{}) (bool, interface{}) {
-	for _, attributeMap := range attributes {
-		for k, v := range attributeMap {
-			if k == searchName {
-				return true, v
+func attributeExists(searchName string, attributes interface{}) (bool, interface{}) {
+	switch attributesCast := attributes.(type) {
+	case []map[string]interface{}:
+		for _, attributeMap := range attributesCast {
+			for k, v := range attributeMap {
+				if k == searchName {
+					return true, v
+				}
 			}
 		}
 	}
@@ -197,7 +213,7 @@ func (m *Match) AttributeEqualsInt(searchKey string, searchValue int) error {
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
 		if exists && attributeValue == searchValue {
 			tmpEntries = append(tmpEntries, entry)
 		}
@@ -220,7 +236,7 @@ func (m *Match) AttributeDoesNotEqualInt(searchKey string, searchValue int) erro
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
 		if exists && attributeValue != searchValue {
 			tmpEntries = append(tmpEntries, entry)
 		}
@@ -243,7 +259,7 @@ func (m *Match) AttributeEquals(searchKey, searchValue string) error {
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
 		if exists && attributeValue == searchValue {
 			tmpEntries = append(tmpEntries, entry)
 		}
@@ -266,7 +282,7 @@ func (m *Match) AttributeDoesNotEqual(searchKey, searchValue string) error {
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
 		if exists && attributeValue != searchValue {
 			tmpEntries = append(tmpEntries, entry)
 		}
@@ -288,7 +304,7 @@ func (m *Match) AttributeGreaterThan(searchKey string, searchValue int) error {
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
 		if !exists {
 			return fmt.Errorf("no attribute found named: %s", searchKey)
 		}
@@ -325,7 +341,7 @@ func (m *Match) AttributeLessThan(searchKey string, searchValue int) error {
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, attributeValue := attributeExists(searchKey, entry.Attributes.([]map[string]interface{}))
+		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
 		if !exists {
 			return fmt.Errorf("no attribute found named: %s", searchKey)
 		}
@@ -390,7 +406,7 @@ func (m *Match) AttributeRegex(attributeName, regexString string) error {
 	}
 
 	for _, entry := range m.MatchingEntries {
-		exists, attributeValue := attributeExists(attributeName, entry.Attributes.([]map[string]interface{}))
+		exists, attributeValue := attributeExists(attributeName, entry.Attributes)
 		if !exists {
 			return fmt.Errorf("no attribute found named: %s", attributeName)
 		}

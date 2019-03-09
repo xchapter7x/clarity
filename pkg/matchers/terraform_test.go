@@ -57,6 +57,17 @@ func TestMatchers(t *testing.T) {
 			Expect(m.AttributeExists("name")).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatch()))
 		})
+
+		t.Run("when attributes is not derived from a output block", func(t *testing.T) {
+			m := &matchers.Match{}
+			err := m.ReadTerraform("testdata/outputs")
+			Expect(err).NotTo(HaveOccurred())
+			err = m.AOfType("rds_password", "output")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(m.AttributeExists("sensitive")).NotTo(HaveOccurred())
+			Expect(m.AttributeExists("value")).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlOutputMatch()))
+		})
 	})
 
 	t.Run("m.AttributeGreaterThan", func(t *testing.T) {
@@ -339,6 +350,22 @@ func TestMatchers(t *testing.T) {
 			Expect(m.AttributeDoesNotEqual("name", "my-custom-network")).To(HaveOccurred())
 		})
 	})
+}
+
+func controlOutputMatch() []matchers.HCLEntry {
+	return []matchers.HCLEntry{
+		matchers.HCLEntry{
+			HCLType:       "output",
+			ComponentName: "rds_password",
+			InstanceName:  "",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"sensitive": true,
+					"value":     "${element(concat(aws_db_instance.rds.*.password, list(\"\")), 0)}",
+				},
+			},
+		},
+	}
 }
 
 func controlInstanceMatch() []matchers.HCLEntry {
