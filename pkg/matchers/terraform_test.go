@@ -18,6 +18,7 @@ func TestMatchers(t *testing.T) {
 			Expect(m.HCLEntries).To(Equal(controlHCL))
 		})
 	})
+
 	t.Run("m.AOfTypeNamed", func(t *testing.T) {
 		t.Run("should return a filtered list of definitions", func(t *testing.T) {
 			m := &matchers.Match{}
@@ -70,10 +71,30 @@ func TestMatchers(t *testing.T) {
 		})
 	})
 
+	t.Run("m.AlwaysAttributeDoesNotEqual", func(t *testing.T) {
+		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlMissingAttribute()
+			Expect(m.AlwaysAttributeDoesNotEqual("name", "def-doesnt-exist")).To(HaveOccurred())
+		})
+
+		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMatch()
+			Expect(m.AlwaysAttributeDoesNotEqual("name", "my-custom-network")).To(HaveOccurred())
+		})
+
+		t.Run("should succeed all elements match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMiss()
+			Expect(m.AlwaysAttributeDoesNotEqual("name", "def-doesnt-exist")).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMiss()))
+		})
+	})
+
 	t.Run("skip block", func(t *testing.T) {
 		t.Skip("adding always functionality soon")
 		t.Run("m.AlwaysAttributeDoesNotEqualInt", func(t *testing.T) {})
-		t.Run("m.AlwaysAttributeDoesNotEqual", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeRegex", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeGreaterThan", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeLessThan", func(t *testing.T) {})

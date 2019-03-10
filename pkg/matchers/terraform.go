@@ -110,12 +110,23 @@ func (m *Match) AlwaysAttributeEquals(searchKey, searchValue string) error {
 	return nil
 }
 
+// AlwaysAttributeDoesNotEqualInt - all elements' attr of search key must not match the search value
 func (m *Match) AlwaysAttributeDoesNotEqualInt(searchKey string, searchValue int) error {
 	return godog.ErrPending
 }
 
+// AlwaysAttributeDoesNotEqual - all elements' attr of search key must not match the search value
 func (m *Match) AlwaysAttributeDoesNotEqual(searchKey string, searchValue string) error {
-	return godog.ErrPending
+	startingEntryCount := len(m.MatchingEntries)
+	err := m.AttributeDoesNotEqual(searchKey, searchValue)
+	if err != nil {
+		return err
+	}
+
+	if startingEntryCount != len(m.MatchingEntries) {
+		return fmt.Errorf("we found un-expected matches on %v : %v", searchKey, searchValue)
+	}
+	return nil
 }
 
 func (m *Match) AlwaysAttributeRegex(attributeName, regexString string) error {
