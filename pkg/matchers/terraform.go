@@ -82,15 +82,35 @@ func (m *Match) Terraform() error {
 	return m.ReadTerraform(pwd)
 }
 
+// AlwaysAttributeEqualsInt - requires all elements to have an exact match on attributes or it fails
 func (m *Match) AlwaysAttributeEqualsInt(searchKey string, searchValue int) error {
-	return godog.ErrPending
+	startingEntryCount := len(m.MatchingEntries)
+	err := m.AttributeEqualsInt(searchKey, searchValue)
+	if err != nil {
+		return err
+	}
+
+	if startingEntryCount != len(m.MatchingEntries) {
+		return fmt.Errorf("not all entries match on %v : %v", searchKey, searchValue)
+	}
+	return nil
+}
+
+// AlwaysAttributeEquals - requires all elements to have an exact match on attributes or it fails
+func (m *Match) AlwaysAttributeEquals(searchKey, searchValue string) error {
+	startingEntryCount := len(m.MatchingEntries)
+	err := m.AttributeEquals(searchKey, searchValue)
+	if err != nil {
+		return err
+	}
+
+	if startingEntryCount != len(m.MatchingEntries) {
+		return fmt.Errorf("not all entries match on %v : %v", searchKey, searchValue)
+	}
+	return nil
 }
 
 func (m *Match) AlwaysAttributeDoesNotEqualInt(searchKey string, searchValue int) error {
-	return godog.ErrPending
-}
-
-func (m *Match) AlwaysAttributeEquals(searchKey, searchValue string) error {
 	return godog.ErrPending
 }
 

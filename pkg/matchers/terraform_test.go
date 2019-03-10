@@ -28,11 +28,51 @@ func TestMatchers(t *testing.T) {
 		})
 	})
 
+	t.Run("m.AlwaysAttributeEqualsInt", func(t *testing.T) {
+		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlMissingAttribute()
+			Expect(m.AlwaysAttributeEqualsInt("name", 5)).To(HaveOccurred())
+		})
+
+		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMissInt()
+			Expect(m.AlwaysAttributeEqualsInt("name", 5)).To(HaveOccurred())
+		})
+
+		t.Run("should succeed all elements match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMatchInt()
+			Expect(m.AlwaysAttributeEqualsInt("name", 5)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMatchInt()))
+		})
+	})
+
+	t.Run("m.AlwaysAttributeEquals", func(t *testing.T) {
+		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlMissingAttribute()
+			Expect(m.AlwaysAttributeEquals("name", "my-custom-network")).To(HaveOccurred())
+		})
+
+		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMiss()
+			Expect(m.AlwaysAttributeEquals("name", "my-custom-network")).To(HaveOccurred())
+		})
+
+		t.Run("should succeed all elements match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMatch()
+			Expect(m.AlwaysAttributeEquals("name", "my-custom-network")).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMatch()))
+		})
+	})
+
 	t.Run("skip block", func(t *testing.T) {
 		t.Skip("adding always functionality soon")
-		t.Run("m.AlwaysAttributeEqualsInt", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeDoesNotEqualInt", func(t *testing.T) {})
-		t.Run("m.AlwaysAttributeEquals", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeDoesNotEqual", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeRegex", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeGreaterThan", func(t *testing.T) {})
@@ -259,6 +299,119 @@ func controlOutputMatch() []matchers.HCLEntry {
 				map[string]interface{}{
 					"sensitive": true,
 					"value":     "${element(concat(aws_db_instance.rds.*.password, list(\"\")), 0)}",
+				},
+			},
+		},
+	}
+}
+
+func controlMissingAttribute() []matchers.HCLEntry {
+	return []matchers.HCLEntry{
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{},
+			},
+		},
+	}
+}
+
+func controlAlwaysMissInt() []matchers.HCLEntry {
+	return []matchers.HCLEntry{
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": 5,
+				},
+			},
+		},
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": 3,
+				},
+			},
+		},
+	}
+}
+
+func controlAlwaysMatchInt() []matchers.HCLEntry {
+	return []matchers.HCLEntry{
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": 5,
+				},
+			},
+		},
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": 5,
+				},
+			},
+		},
+	}
+}
+
+func controlAlwaysMiss() []matchers.HCLEntry {
+	return []matchers.HCLEntry{
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": "my-custom-network",
+				},
+			},
+		},
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": "epic fail",
+				},
+			},
+		},
+	}
+}
+
+func controlAlwaysMatch() []matchers.HCLEntry {
+	return []matchers.HCLEntry{
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": "my-custom-network",
+				},
+			},
+		},
+		matchers.HCLEntry{
+			HCLType:       "resource",
+			ComponentName: "google_compute_network",
+			InstanceName:  "my-custom-network",
+			Attributes: []map[string]interface{}{
+				map[string]interface{}{
+					"name": "my-custom-network",
 				},
 			},
 		},
