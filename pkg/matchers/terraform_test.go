@@ -78,13 +78,13 @@ func TestMatchers(t *testing.T) {
 			Expect(m.AlwaysAttributeDoesNotEqual("name", "def-doesnt-exist")).To(HaveOccurred())
 		})
 
-		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
+		t.Run("should fail if there are any elements that match", func(t *testing.T) {
 			m := &matchers.Match{}
 			m.MatchingEntries = controlAlwaysMatch()
 			Expect(m.AlwaysAttributeDoesNotEqual("name", "my-custom-network")).To(HaveOccurred())
 		})
 
-		t.Run("should succeed all elements match", func(t *testing.T) {
+		t.Run("should succeed NO elements match", func(t *testing.T) {
 			m := &matchers.Match{}
 			m.MatchingEntries = controlAlwaysMiss()
 			Expect(m.AlwaysAttributeDoesNotEqual("name", "def-doesnt-exist")).NotTo(HaveOccurred())
@@ -92,9 +92,29 @@ func TestMatchers(t *testing.T) {
 		})
 	})
 
+	t.Run("m.AlwaysAttributeDoesNotEqualInt", func(t *testing.T) {
+		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlMissingAttribute()
+			Expect(m.AlwaysAttributeDoesNotEqualInt("name", 5)).To(HaveOccurred())
+		})
+
+		t.Run("should fail if there are any elements that match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMatchInt()
+			Expect(m.AlwaysAttributeDoesNotEqualInt("name", 5)).To(HaveOccurred())
+		})
+
+		t.Run("should succeed NO elements match", func(t *testing.T) {
+			m := &matchers.Match{}
+			m.MatchingEntries = controlAlwaysMissInt()
+			Expect(m.AlwaysAttributeDoesNotEqualInt("name", 24)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMissInt()))
+		})
+	})
+
 	t.Run("skip block", func(t *testing.T) {
 		t.Skip("adding always functionality soon")
-		t.Run("m.AlwaysAttributeDoesNotEqualInt", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeRegex", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeGreaterThan", func(t *testing.T) {})
 		t.Run("m.AlwaysAttributeLessThan", func(t *testing.T) {})
