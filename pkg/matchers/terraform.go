@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/DATA-DOG/godog"
 	"github.com/hashicorp/hcl"
 )
 
@@ -79,6 +80,34 @@ func (m *Match) Terraform() error {
 		log.Panic(err)
 	}
 	return m.ReadTerraform(pwd)
+}
+
+func (m *Match) AlwaysAttributeEqualsInt(searchKey string, searchValue int) error {
+	return godog.ErrPending
+}
+
+func (m *Match) AlwaysAttributeDoesNotEqualInt(searchKey string, searchValue int) error {
+	return godog.ErrPending
+}
+
+func (m *Match) AlwaysAttributeEquals(searchKey, searchValue string) error {
+	return godog.ErrPending
+}
+
+func (m *Match) AlwaysAttributeDoesNotEqual(searchKey string, searchValue string) error {
+	return godog.ErrPending
+}
+
+func (m *Match) AlwaysAttributeRegex(attributeName, regexString string) error {
+	return godog.ErrPending
+}
+
+func (m *Match) AlwaysAttributeGreaterThan(searchKey string, searchValue int) error {
+	return godog.ErrPending
+}
+
+func (m *Match) AlwaysAttributeLessThan(searchKey string, searchValue int) error {
+	return godog.ErrPending
 }
 
 // ReadTerrraform a simple matcher to init from terraform in
