@@ -31,20 +31,17 @@ func TestMatchers(t *testing.T) {
 
 	t.Run("m.AlwaysAttributeEqualsInt", func(t *testing.T) {
 		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlMissingAttribute()
+			m := &matchers.Match{MatchingEntries: controlMissingAttribute()}
 			Expect(m.AlwaysAttributeEqualsInt("name", 5)).To(HaveOccurred())
 		})
 
 		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMissInt()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMissInt()}
 			Expect(m.AlwaysAttributeEqualsInt("name", 5)).To(HaveOccurred())
 		})
 
 		t.Run("should succeed all elements match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMatchInt()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMatchInt()}
 			Expect(m.AlwaysAttributeEqualsInt("name", 5)).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMatchInt()))
 		})
@@ -52,20 +49,17 @@ func TestMatchers(t *testing.T) {
 
 	t.Run("m.AlwaysAttributeEquals", func(t *testing.T) {
 		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlMissingAttribute()
+			m := &matchers.Match{MatchingEntries: controlMissingAttribute()}
 			Expect(m.AlwaysAttributeEquals("name", "my-custom-network")).To(HaveOccurred())
 		})
 
 		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMiss()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMiss()}
 			Expect(m.AlwaysAttributeEquals("name", "my-custom-network")).To(HaveOccurred())
 		})
 
 		t.Run("should succeed all elements match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMatch()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMatch()}
 			Expect(m.AlwaysAttributeEquals("name", "my-custom-network")).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMatch()))
 		})
@@ -73,20 +67,17 @@ func TestMatchers(t *testing.T) {
 
 	t.Run("m.AlwaysAttributeDoesNotEqual", func(t *testing.T) {
 		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlMissingAttribute()
+			m := &matchers.Match{MatchingEntries: controlMissingAttribute()}
 			Expect(m.AlwaysAttributeDoesNotEqual("name", "def-doesnt-exist")).To(HaveOccurred())
 		})
 
 		t.Run("should fail if there are any elements that match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMatch()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMatch()}
 			Expect(m.AlwaysAttributeDoesNotEqual("name", "my-custom-network")).To(HaveOccurred())
 		})
 
 		t.Run("should succeed NO elements match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMiss()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMiss()}
 			Expect(m.AlwaysAttributeDoesNotEqual("name", "def-doesnt-exist")).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMiss()))
 		})
@@ -94,20 +85,17 @@ func TestMatchers(t *testing.T) {
 
 	t.Run("m.AlwaysAttributeDoesNotEqualInt", func(t *testing.T) {
 		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlMissingAttribute()
+			m := &matchers.Match{MatchingEntries: controlMissingAttribute()}
 			Expect(m.AlwaysAttributeDoesNotEqualInt("name", 5)).To(HaveOccurred())
 		})
 
 		t.Run("should fail if there are any elements that match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMatchInt()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMatchInt()}
 			Expect(m.AlwaysAttributeDoesNotEqualInt("name", 5)).To(HaveOccurred())
 		})
 
 		t.Run("should succeed NO elements match", func(t *testing.T) {
-			m := &matchers.Match{}
-			m.MatchingEntries = controlAlwaysMissInt()
+			m := &matchers.Match{MatchingEntries: controlAlwaysMissInt()}
 			Expect(m.AlwaysAttributeDoesNotEqualInt("name", 24)).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMissInt()))
 		})
