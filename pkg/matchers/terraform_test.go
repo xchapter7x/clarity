@@ -101,11 +101,58 @@ func TestMatchers(t *testing.T) {
 		})
 	})
 
-	t.Run("skip block", func(t *testing.T) {
-		t.Skip("adding always functionality soon")
-		t.Run("m.AlwaysAttributeRegex", func(t *testing.T) {})
-		t.Run("m.AlwaysAttributeGreaterThan", func(t *testing.T) {})
-		t.Run("m.AlwaysAttributeLessThan", func(t *testing.T) {})
+	t.Run("m.AlwaysAttributeRegex", func(t *testing.T) {
+		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlMissingAttribute()}
+			Expect(m.AlwaysAttributeRegex("name", "off")).To(HaveOccurred())
+		})
+
+		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlAlwaysMiss()}
+			Expect(m.AlwaysAttributeRegex("name", "my-custom-network")).To(HaveOccurred())
+		})
+
+		t.Run("should succeed when all elements match", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlAlwaysMatch()}
+			Expect(m.AlwaysAttributeRegex("name", "my-custom-network")).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMatch()))
+		})
+	})
+
+	t.Run("m.AlwaysAttributeGreaterThan", func(t *testing.T) {
+		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlMissingAttribute()}
+			Expect(m.AlwaysAttributeGreaterThan("name", 5)).To(HaveOccurred())
+		})
+
+		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlAlwaysMissInt()}
+			Expect(m.AlwaysAttributeGreaterThan("name", 4)).To(HaveOccurred())
+		})
+
+		t.Run("should succeed when all elements match", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlAlwaysMatchInt()}
+			Expect(m.AlwaysAttributeGreaterThan("name", 2)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMatchInt()))
+		})
+	})
+
+	t.Run("m.AlwaysAttributeLessThan", func(t *testing.T) {
+		t.Run("should fail but not panic if the attribute doesnt exist", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlMissingAttribute()}
+			Expect(m.AlwaysAttributeLessThan("name", 5)).To(HaveOccurred())
+		})
+
+		t.Run("should fail if there are any elements that dont match", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlAlwaysMissInt()}
+			Expect(m.AlwaysAttributeLessThan("name", 4)).To(HaveOccurred())
+		})
+
+		t.Run("should succeed when all elements match", func(t *testing.T) {
+			m := &matchers.Match{MatchingEntries: controlAlwaysMatchInt()}
+			Expect(m.AlwaysAttributeLessThan("name", 6)).NotTo(HaveOccurred())
+			Expect(m.MatchingEntries).To(BeEquivalentTo(controlAlwaysMatchInt()))
+		})
 	})
 
 	t.Run("m.AOfType", func(t *testing.T) {

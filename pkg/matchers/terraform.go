@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/DATA-DOG/godog"
 	"github.com/hashicorp/hcl"
 )
 
@@ -138,16 +137,44 @@ func (m *Match) AlwaysAttributeDoesNotEqual(searchKey string, searchValue string
 	return nil
 }
 
+// AlwaysAttributeRegex - Check if all elements match regex
 func (m *Match) AlwaysAttributeRegex(attributeName, regexString string) error {
-	return godog.ErrPending
+	startingEntryCount := len(m.MatchingEntries)
+	err := m.AttributeRegex(attributeName, regexString)
+	if err != nil {
+		return err
+	}
+
+	if startingEntryCount != len(m.MatchingEntries) {
+		return fmt.Errorf("not every entry matches on %v : %v", attributeName, regexString)
+	}
+	return nil
 }
 
 func (m *Match) AlwaysAttributeGreaterThan(searchKey string, searchValue int) error {
-	return godog.ErrPending
+	startingEntryCount := len(m.MatchingEntries)
+	err := m.AttributeGreaterThan(searchKey, searchValue)
+	if err != nil {
+		return err
+	}
+
+	if startingEntryCount != len(m.MatchingEntries) {
+		return fmt.Errorf("not every entry matches on %v : %v", searchKey, searchValue)
+	}
+	return nil
 }
 
 func (m *Match) AlwaysAttributeLessThan(searchKey string, searchValue int) error {
-	return godog.ErrPending
+	startingEntryCount := len(m.MatchingEntries)
+	err := m.AttributeLessThan(searchKey, searchValue)
+	if err != nil {
+		return err
+	}
+
+	if startingEntryCount != len(m.MatchingEntries) {
+		return fmt.Errorf("not every entry matches on %v : %v", searchKey, searchValue)
+	}
+	return nil
 }
 
 // ReadTerrraform a simple matcher to init from terraform in
