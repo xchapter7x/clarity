@@ -32,6 +32,14 @@ func FeatureContext(s *godog.Suite) {
 		s.Step(`^`+phrasePrefix+` "([^"]*)" matches regex "([^"]*)"$`, match.AttributeRegex)
 		s.Step(`^`+phrasePrefix+` "([^"]*)" is greater than (\d+)$`, match.AttributeGreaterThan)
 		s.Step(`^`+phrasePrefix+` "([^"]*)" is less than (\d+)$`, match.AttributeLessThan)
+
+		s.Step(`^`+phrasePrefix+` "([^"]*)" always equals (\d+)$`, match.AlwaysAttributeEqualsInt)
+		s.Step(`^`+phrasePrefix+` "([^"]*)" never equals (\d+)$`, match.AlwaysAttributeDoesNotEqualInt)
+		s.Step(`^`+phrasePrefix+` "([^"]*)" always equals "([^"]*)"$`, match.AlwaysAttributeEquals)
+		s.Step(`^`+phrasePrefix+` "([^"]*)" never equals "([^"]*)"$`, match.AlwaysAttributeDoesNotEqual)
+		s.Step(`^`+phrasePrefix+` "([^"]*)" always matches regex "([^"]*)"$`, match.AlwaysAttributeRegex)
+		s.Step(`^`+phrasePrefix+` "([^"]*)" is always greater than (\d+)$`, match.AlwaysAttributeGreaterThan)
+		s.Step(`^`+phrasePrefix+` "([^"]*)" is always less than (\d+)$`, match.AlwaysAttributeLessThan)
 	}
 
 	s.Step(`^attribute "([^"]*)" exists$`, match.AttributeExists)
