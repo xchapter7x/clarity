@@ -1,6 +1,10 @@
 # Clarity
 [![CircleCI](https://circleci.com/gh/xchapter7x/clarity.svg?style=svg)](https://circleci.com/gh/xchapter7x/clarity)
 
+
+## For more complete testing support using OPA policies check out:
+https://github.com/instrumenta/conftest
+
 ## A declaritive test framework for Terraform
 - reason: B/c unit testing terraform needs to be a thing
 
