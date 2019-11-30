@@ -19,9 +19,8 @@ https://github.com/instrumenta/conftest
 ## Install
 
 ```bash
-$ export VERSION="v0.6.1"
 $ export OS="osx" #(osx | unix)
-$ curl -sL https://github.com/xchapter7x/clarity/releases/download/${VERSION}/clarity_${OS} -o /usr/local/bin/clarity && chmod +x /usr/local/bin/clarity
+$ curl -sL https://github.com/xchapter7x/clarity/releases/latest/download/clarity_${OS} -o /usr/local/bin/clarity && chmod +x /usr/local/bin/clarity
 ```
 
 ### Download Binaries
