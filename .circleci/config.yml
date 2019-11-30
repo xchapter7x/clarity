@@ -9,8 +9,6 @@ jobs:
     working_directory: /go/src/github.com/xchapter7x/clarity
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run: sudo chmod -R 777 /usr/local
       - run: go get -u github.com/maxbrunsfeld/counterfeiter
       - run: go get github.com/DATA-DOG/godog/cmd/godog && mv /go/bin/godog /usr/local/bin/.
