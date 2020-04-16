@@ -10,7 +10,6 @@ jobs:
     steps:
       - checkout
       - run: sudo chmod -R 777 /usr/local
-      - run: go get -u github.com/maxbrunsfeld/counterfeiter
       - run: go get github.com/cucumber/godog/cmd/godog && mv /go/bin/godog /usr/local/bin/.
       - run: make unit
       - run: make build
