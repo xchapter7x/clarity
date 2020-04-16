@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/DATA-DOG/godog"
+	"github.com/cucumber/godog"
+	"github.com/cucumber/messages-go/v10"
 	"github.com/xchapter7x/clarity/pkg/matchers"
 )
 
 func FeatureContext(s *godog.Suite) {
 	match := matchers.NewMatch()
-	s.BeforeScenario(func(interface{}) {
+	s.BeforeScenario(func(*messages.Pickle) {
 		match = matchers.NewMatch()
 	})
 	s.Step(`^Pivotal OpsManager .ptc$`, markPending)
