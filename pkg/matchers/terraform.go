@@ -178,9 +178,9 @@ func (m *Match) AlwaysAttributeLessThan(searchKey string, searchValue int) error
 	return nil
 }
 
-type unmarshaller func(p []byte, v interface{}) error
+type Unmarshaller func(p []byte, v interface{}) error
 
-func GetUnmarshallerVersion(version int) unmarshaller {
+func GetUnmarshallerVersion(version int) Unmarshaller {
 	if version == 1 {
 		return hcl.Unmarshal
 	}
@@ -191,7 +191,7 @@ func GetUnmarshallerVersion(version int) unmarshaller {
 
 // ReadTerrraform a simple matcher to init from terraform in
 // a given directory
-func (m *Match) ReadTerraform(tpath string, unmarshal unmarshaller) error {
+func (m *Match) ReadTerraform(tpath string, unmarshal Unmarshaller) error {
 	baseHCL := make(map[string]interface{}, 0)
 	dirContents := ""
 	files, err := ioutil.ReadDir(tpath)
