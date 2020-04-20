@@ -1,6 +1,7 @@
 package matchers_test
 
 import (
+	"sort"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -28,6 +29,8 @@ func TestMatchers(t *testing.T) {
 				t.Run("should read all the terraform files into the matcher", func(t *testing.T) {
 					err := m.ReadTerraform("testdata/multitf", unmarshal)
 					Expect(err).NotTo(HaveOccurred())
+					sort.SliceStable(controlHCL, func(i, j int) bool { return controlHCL[i].InstanceName < controlHCL[j].InstanceName })
+					sort.SliceStable(m.HCLEntries, func(i, j int) bool { return m.HCLEntries[i].InstanceName < m.HCLEntries[j].InstanceName })
 					Expect(m.HCLEntries).To(Equal(controlHCL))
 				})
 			})
@@ -195,7 +198,9 @@ func TestMatchers(t *testing.T) {
 					Expect(err).NotTo(HaveOccurred())
 					Expect(m.AttributeExists("sensitive")).NotTo(HaveOccurred())
 					Expect(m.AttributeExists("value")).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlOutputMatch()))
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlOutputMatch()[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlOutputMatch()[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlOutputMatch()[0].InstanceName))
 				})
 			})
 
@@ -219,7 +224,9 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value and the attr value is a int type", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
 					Expect(m.AttributeGreaterThan("port", 79)).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
 				})
 			})
 
@@ -301,7 +308,9 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value and attr value is type int", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
 					Expect(m.AttributeLessThan("port", 81)).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
 				})
 			})
 
@@ -319,7 +328,9 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
 					Expect(m.AttributeEqualsInt("port", 80)).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
 				})
 			})
 

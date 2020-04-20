@@ -30,11 +30,17 @@ type HCLEntry struct {
 	Attributes    interface{}
 }
 
-func parseHCL(rawHCL map[string]interface{}) []HCLEntry {
+func parseHCL2(rawHCL map[string]interface{}) []HCLEntry {
 	hclEntries := make([]HCLEntry, 0)
 	for hclType, componentsArrayMap := range rawHCL {
-		for _, componentsMap := range componentsArrayMap.([]map[string]interface{}) {
-			hclEntries = addComponentsToEntries(hclEntries, hclType, componentsMap)
+		switch components := componentsArrayMap.(type) {
+		case map[string]interface{}:
+			hclEntries = addComponentsToEntries(hclEntries, hclType, components)
+
+		case []map[string]interface{}:
+			for _, componentsMap := range components {
+				hclEntries = addComponentsToEntries(hclEntries, hclType, componentsMap)
+			}
 		}
 	}
 	return hclEntries
@@ -58,6 +64,15 @@ func addComponentsToEntries(hclEntries []HCLEntry, hclType string, componentsMap
 						ComponentName: componentName,
 						InstanceName:  instanceName,
 						Attributes:    attributes,
+					})
+				}
+			case map[string]interface{}:
+				for instanceName, instance := range instancesCast {
+					hclEntries = append(hclEntries, HCLEntry{
+						HCLType:       hclType,
+						ComponentName: componentName,
+						InstanceName:  instanceName,
+						Attributes:    []map[string]interface{}{instance.(map[string]interface{})},
 					})
 				}
 			default:
@@ -215,7 +230,7 @@ func (m *Match) ReadTerraform(tpath string, unmarshal Unmarshaller) error {
 		return fmt.Errorf("hcl Unmarshal failed: %v", err)
 	}
 
-	m.HCLEntries = parseHCL(baseHCL)
+	m.HCLEntries = parseHCL2(baseHCL)
 	return nil
 }
 
@@ -257,7 +272,6 @@ func (m *Match) AOfType(providerFeature, providerFeatureType string) error {
 		entries, _ := json.Marshal(m.HCLEntries)
 		return fmt.Errorf("no matches found for attribute %v \n %v", providerFeature, string(entries))
 	}
-
 	m.MatchingEntries = append(m.MatchingEntries, matchingFeature...)
 	return nil
 }
@@ -306,6 +320,12 @@ func attributeExists(searchName string, attributes interface{}) (bool, interface
 				if k == searchName {
 					return true, v
 				}
+			}
+		}
+	case map[string]interface{}:
+		for k, v := range attributesCast {
+			if k == searchName {
+				return true, v
 			}
 		}
 	}
@@ -426,6 +446,10 @@ func (m *Match) AttributeGreaterThan(searchKey string, searchValue int) error {
 			}
 		case int:
 			actualValue = attributeValue
+		case float64:
+			actualValue = int(attributeValue)
+		default:
+			return fmt.Errorf("could not translate to int")
 		}
 
 		if exists && actualValue > searchValue {
