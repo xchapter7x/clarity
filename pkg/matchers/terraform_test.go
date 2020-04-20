@@ -13,7 +13,7 @@ func TestMatchers(t *testing.T) {
 		m := &matchers.Match{}
 		controlHCL := multiTFControl()
 		t.Run("should read all the terraform files into the matcher", func(t *testing.T) {
-			err := m.ReadTerraform("testdata/multitf")
+			err := m.ReadTerraform("testdata/multitf", matchers.GetUnmarshallerVersion(1))
 			Expect(err).NotTo(HaveOccurred())
 			Expect(m.HCLEntries).To(Equal(controlHCL))
 		})
@@ -22,7 +22,7 @@ func TestMatchers(t *testing.T) {
 	t.Run("m.AOfTypeNamed", func(t *testing.T) {
 		t.Run("should return a filtered list of definitions", func(t *testing.T) {
 			m := &matchers.Match{}
-			m.ReadTerraform("testdata")
+			m.ReadTerraform("testdata", matchers.GetUnmarshallerVersion(1))
 			err := m.AOfTypeNamed("google_compute_network", "resource", "my-custom-network")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatch()))
@@ -176,7 +176,7 @@ func TestMatchers(t *testing.T) {
 
 		t.Run("when attributes is not derived from a output block", func(t *testing.T) {
 			m := &matchers.Match{}
-			err := m.ReadTerraform("testdata/outputs")
+			err := m.ReadTerraform("testdata/outputs", matchers.GetUnmarshallerVersion(1))
 			Expect(err).NotTo(HaveOccurred())
 			err = m.AOfType("rds_password", "output")
 			Expect(err).NotTo(HaveOccurred())
@@ -259,7 +259,7 @@ func TestMatchers(t *testing.T) {
 
 		t.Run("when our attribute is a complex object and it satisfies the regex", func(t *testing.T) {
 			m := &matchers.Match{}
-			err := m.ReadTerraform("testdata")
+			err := m.ReadTerraform("testdata", matchers.GetUnmarshallerVersion(1))
 			Expect(err).NotTo(HaveOccurred())
 			err = m.AOfTypeNamed("google_compute_firewall", "resource", "allow-all-internal")
 			Expect(err).NotTo(HaveOccurred())
@@ -562,7 +562,7 @@ func multiTFControl() []matchers.HCLEntry {
 
 func resourceMatcherByType(resourceType string) *matchers.Match {
 	m := &matchers.Match{}
-	err := m.ReadTerraform("testdata")
+	err := m.ReadTerraform("testdata", matchers.GetUnmarshallerVersion(1))
 	Expect(err).NotTo(HaveOccurred())
 	err = m.AOfType(resourceType, "resource")
 	Expect(err).NotTo(HaveOccurred())

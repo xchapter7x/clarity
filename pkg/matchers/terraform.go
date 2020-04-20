@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/hcl"
+	hcl2 "github.com/instrumenta/conftest/parser/hcl2"
 )
 
 func NewMatch() *Match {
@@ -78,7 +79,7 @@ func (m *Match) Terraform() error {
 	if err != nil {
 		log.Panic(err)
 	}
-	return m.ReadTerraform(pwd)
+	return m.ReadTerraform(pwd, GetUnmarshallerVersion(1))
 }
 
 // AlwaysAttributeEqualsInt - requires all elements to have an exact match on attributes or it fails
@@ -177,9 +178,20 @@ func (m *Match) AlwaysAttributeLessThan(searchKey string, searchValue int) error
 	return nil
 }
 
+type unmarshaller func(p []byte, v interface{}) error
+
+func GetUnmarshallerVersion(version int) unmarshaller {
+	if version == 1 {
+		return hcl.Unmarshal
+	}
+
+	p := new(hcl2.Parser)
+	return p.Unmarshal
+}
+
 // ReadTerrraform a simple matcher to init from terraform in
 // a given directory
-func (m *Match) ReadTerraform(tpath string) error {
+func (m *Match) ReadTerraform(tpath string, unmarshal unmarshaller) error {
 	baseHCL := make(map[string]interface{}, 0)
 	dirContents := ""
 	files, err := ioutil.ReadDir(tpath)
@@ -198,7 +210,7 @@ func (m *Match) ReadTerraform(tpath string) error {
 		}
 	}
 
-	err = hcl.Unmarshal([]byte(dirContents), &baseHCL)
+	err = unmarshal([]byte(dirContents), &baseHCL)
 	if err != nil {
 		return fmt.Errorf("hcl Unmarshal failed: %v", err)
 	}
