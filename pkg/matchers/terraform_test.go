@@ -15,8 +15,8 @@ func TestMatchers(t *testing.T) {
 		name      string
 		skip      bool
 	}{
-		{name: "hcl1", unmarshal: matchers.GetUnmarshallerVersion(1), skip: false},
-		{name: "hcl2", unmarshal: matchers.GetUnmarshallerVersion(2), skip: true},
+		{name: "hcl1", unmarshal: matchers.GetUnmarshallerVersion(1)},
+		{name: "hcl2", unmarshal: matchers.GetUnmarshallerVersion(2)},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.skip {
@@ -198,6 +198,7 @@ func TestMatchers(t *testing.T) {
 					Expect(err).NotTo(HaveOccurred())
 					Expect(m.AttributeExists("sensitive")).NotTo(HaveOccurred())
 					Expect(m.AttributeExists("value")).NotTo(HaveOccurred())
+					Expect(len(m.MatchingEntries)).To(Equal(len(controlOutputMatch())))
 					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlOutputMatch()[0].HCLType))
 					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlOutputMatch()[0].ComponentName))
 					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlOutputMatch()[0].InstanceName))
@@ -224,6 +225,7 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value and the attr value is a int type", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
 					Expect(m.AttributeGreaterThan("port", 79)).NotTo(HaveOccurred())
+					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
 					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
 					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
 					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
@@ -308,6 +310,7 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value and attr value is type int", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
 					Expect(m.AttributeLessThan("port", 81)).NotTo(HaveOccurred())
+					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
 					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
 					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
 					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
@@ -328,6 +331,7 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
 					Expect(m.AttributeEqualsInt("port", 80)).NotTo(HaveOccurred())
+					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
 					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
 					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
 					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
@@ -348,7 +352,10 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
 					Expect(m.AttributeDoesNotEqualInt("port", 81)).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchInt()))
+					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
 				})
 			})
 

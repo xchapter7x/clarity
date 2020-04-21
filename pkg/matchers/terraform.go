@@ -342,7 +342,15 @@ func (m *Match) AttributeEqualsInt(searchKey string, searchValue int) error {
 
 	for _, entry := range m.MatchingEntries {
 		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
-		if exists && attributeValue == searchValue {
+		var attributeInteger int
+		switch v := attributeValue.(type) {
+		case int:
+			attributeInteger = v
+		case float64:
+			attributeInteger = int(v)
+		}
+
+		if exists && attributeInteger == searchValue {
 			tmpEntries = append(tmpEntries, entry)
 		}
 	}
@@ -365,7 +373,15 @@ func (m *Match) AttributeDoesNotEqualInt(searchKey string, searchValue int) erro
 
 	for _, entry := range m.MatchingEntries {
 		exists, attributeValue := attributeExists(searchKey, entry.Attributes)
-		if exists && attributeValue != searchValue {
+		var attributeInteger int
+		switch v := attributeValue.(type) {
+		case int:
+			attributeInteger = v
+		case float64:
+			attributeInteger = int(v)
+		}
+
+		if exists && attributeInteger != searchValue {
 			tmpEntries = append(tmpEntries, entry)
 		}
 	}
