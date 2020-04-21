@@ -11,9 +11,8 @@ func FeatureContext(s *godog.Suite) {
 	s.BeforeScenario(func(*messages.Pickle) {
 		match = matchers.NewMatch()
 	})
-	s.Step(`^Pivotal OpsManager .ptc$`, markPending)
-
 	s.Step(`^Terraform$`, match.Terraform)
+	s.Step(`^HCL2$`, match.HCL2)
 	s.Step(`^a "([^"]*)" of type "([^"]*)"$`, match.AOfType)
 	s.Step(`^a "([^"]*)" of type "([^"]*)" named "([^"]*)"$`, match.AOfTypeNamed)
 

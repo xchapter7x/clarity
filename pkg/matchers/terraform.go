@@ -97,6 +97,16 @@ func (m *Match) Terraform() error {
 	return m.ReadTerraform(pwd, GetUnmarshallerVersion(1))
 }
 
+// HCL2 a simple matcher to show intent to init from a hcl2 terraform in
+// current directory
+func (m *Match) HCL2() error {
+	pwd, err := os.Getwd()
+	if err != nil {
+		log.Panic(err)
+	}
+	return m.ReadTerraform(pwd, GetUnmarshallerVersion(2))
+}
+
 // AlwaysAttributeEqualsInt - requires all elements to have an exact match on attributes or it fails
 func (m *Match) AlwaysAttributeEqualsInt(searchKey string, searchValue int) error {
 	startingEntryCount := len(m.MatchingEntries)
