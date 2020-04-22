@@ -31,7 +31,11 @@ func TestMatchers(t *testing.T) {
 					Expect(err).NotTo(HaveOccurred())
 					sort.SliceStable(controlHCL, func(i, j int) bool { return controlHCL[i].InstanceName < controlHCL[j].InstanceName })
 					sort.SliceStable(m.HCLEntries, func(i, j int) bool { return m.HCLEntries[i].InstanceName < m.HCLEntries[j].InstanceName })
-					Expect(m.HCLEntries).To(Equal(controlHCL))
+					Expect(len(m.HCLEntries)).To(Equal(len(controlHCL)))
+					attributesMatch(m.HCLEntries, controlHCL)
+					Expect(m.HCLEntries[0].HCLType).To(BeEquivalentTo(controlHCL[0].HCLType))
+					Expect(m.HCLEntries[0].ComponentName).To(BeEquivalentTo(controlHCL[0].ComponentName))
+					Expect(m.HCLEntries[0].InstanceName).To(BeEquivalentTo(controlHCL[0].InstanceName))
 				})
 			})
 
@@ -41,7 +45,12 @@ func TestMatchers(t *testing.T) {
 					m.ReadTerraform("testdata", unmarshal)
 					err := m.AOfTypeNamed("google_compute_network", "resource", "my-custom-network")
 					Expect(err).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatch()))
+					control := controlInstanceMatch()
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -174,7 +183,12 @@ func TestMatchers(t *testing.T) {
 			t.Run("m.AOfType", func(t *testing.T) {
 				t.Run("should return a filtered list of definitions", func(t *testing.T) {
 					m := resourceMatcherByType("google_compute_network", unmarshal)
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatch()))
+					control := controlInstanceMatch()
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -187,7 +201,12 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches", func(t *testing.T) {
 					m := resourceMatcherByType("google_compute_network", unmarshal)
 					Expect(m.AttributeExists("name")).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatch()))
+					control := controlInstanceMatch()
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 
 				t.Run("when attributes is not derived from a output block", func(t *testing.T) {
@@ -221,13 +240,18 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("blah_blah", unmarshal)
 					Expect(m.AttributeGreaterThan("port", 79)).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchIntString()))
+					control := controlInstanceMatchIntString()
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 
 				t.Run("when there are matches with a correct value and the attr value is a int type", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
-					control := controlInstanceMatchInt()
 					Expect(m.AttributeGreaterThan("port", 79)).NotTo(HaveOccurred())
+					control := controlInstanceMatchInt()
 					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
 					attributesMatch(m.MatchingEntries, control)
 					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
@@ -308,7 +332,12 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("blah_blah", unmarshal)
 					Expect(m.AttributeLessThan("port", 81)).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatchIntString()))
+					control := controlInstanceMatchIntString()
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 
 				t.Run("when there are matches with a correct value and attr value is type int", func(t *testing.T) {
@@ -383,7 +412,12 @@ func TestMatchers(t *testing.T) {
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("google_compute_network", unmarshal)
 					Expect(m.AttributeEquals("name", "my-custom-network")).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatch()))
+					control := controlInstanceMatch()
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -396,7 +430,12 @@ func TestMatchers(t *testing.T) {
 				t.Run("when a valid attribute has non equal value", func(t *testing.T) {
 					m := resourceMatcherByType("google_compute_network", unmarshal)
 					Expect(m.AttributeDoesNotEqual("name", "wrong-name")).NotTo(HaveOccurred())
-					Expect(m.MatchingEntries).To(BeEquivalentTo(controlInstanceMatch()))
+					control := controlInstanceMatch()
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 
 				t.Run("when there are matches with a correct value", func(t *testing.T) {

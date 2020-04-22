@@ -72,7 +72,7 @@ func addComponentsToEntries(hclEntries []HCLEntry, hclType string, componentsMap
 						HCLType:       hclType,
 						ComponentName: componentName,
 						InstanceName:  instanceName,
-						Attributes:    []map[string]interface{}{instance.(map[string]interface{})},
+						Attributes:    instance,
 					})
 				}
 			default:
