@@ -192,16 +192,18 @@ func TestMatchers(t *testing.T) {
 
 				t.Run("when attributes is not derived from a output block", func(t *testing.T) {
 					m := &matchers.Match{}
+					control := controlOutputMatch()
 					err := m.ReadTerraform("testdata/outputs", unmarshal)
 					Expect(err).NotTo(HaveOccurred())
 					err = m.AOfType("rds_password", "output")
 					Expect(err).NotTo(HaveOccurred())
 					Expect(m.AttributeExists("sensitive")).NotTo(HaveOccurred())
 					Expect(m.AttributeExists("value")).NotTo(HaveOccurred())
-					Expect(len(m.MatchingEntries)).To(Equal(len(controlOutputMatch())))
-					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlOutputMatch()[0].HCLType))
-					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlOutputMatch()[0].ComponentName))
-					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlOutputMatch()[0].InstanceName))
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -224,11 +226,13 @@ func TestMatchers(t *testing.T) {
 
 				t.Run("when there are matches with a correct value and the attr value is a int type", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
+					control := controlInstanceMatchInt()
 					Expect(m.AttributeGreaterThan("port", 79)).NotTo(HaveOccurred())
-					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
-					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
-					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
-					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -309,11 +313,13 @@ func TestMatchers(t *testing.T) {
 
 				t.Run("when there are matches with a correct value and attr value is type int", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
+					control := controlInstanceMatchInt()
 					Expect(m.AttributeLessThan("port", 81)).NotTo(HaveOccurred())
-					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
-					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
-					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
-					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -330,11 +336,13 @@ func TestMatchers(t *testing.T) {
 
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
+					control := controlInstanceMatchInt()
 					Expect(m.AttributeEqualsInt("port", 80)).NotTo(HaveOccurred())
-					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
-					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
-					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
-					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -351,11 +359,13 @@ func TestMatchers(t *testing.T) {
 
 				t.Run("when there are matches with a correct value", func(t *testing.T) {
 					m := resourceMatcherByType("foo", unmarshal)
+					control := controlInstanceMatchInt()
 					Expect(m.AttributeDoesNotEqualInt("port", 81)).NotTo(HaveOccurred())
-					Expect(len(m.MatchingEntries)).To(Equal(len(controlInstanceMatchInt())))
-					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(controlInstanceMatchInt()[0].HCLType))
-					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(controlInstanceMatchInt()[0].ComponentName))
-					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(controlInstanceMatchInt()[0].InstanceName))
+					Expect(len(m.MatchingEntries)).To(Equal(len(control)))
+					attributesMatch(m.MatchingEntries, control)
+					Expect(m.MatchingEntries[0].HCLType).To(BeEquivalentTo(control[0].HCLType))
+					Expect(m.MatchingEntries[0].ComponentName).To(BeEquivalentTo(control[0].ComponentName))
+					Expect(m.MatchingEntries[0].InstanceName).To(BeEquivalentTo(control[0].InstanceName))
 				})
 			})
 
@@ -591,6 +601,24 @@ func multiTFControl() []matchers.HCLEntry {
 			},
 		},
 	}
+}
+
+func attributesMatch(object1, object2 interface{}) {
+	var attr1, attr2 []map[string]interface{}
+	switch attr := object1.(type) {
+	case map[string]interface{}:
+		attr1 = []map[string]interface{}{attr}
+	case []map[string]interface{}:
+		attr1 = attr
+	}
+
+	switch attr := object2.(type) {
+	case map[string]interface{}:
+		attr2 = []map[string]interface{}{attr}
+	case []map[string]interface{}:
+		attr2 = attr
+	}
+	Expect(attr1).To(BeEquivalentTo(attr2))
 }
 
 func resourceMatcherByType(resourceType string, unmarshal matchers.Unmarshaller) *matchers.Match {
