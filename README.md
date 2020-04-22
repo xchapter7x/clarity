@@ -156,7 +156,8 @@ Feature: We should have a LB for our control plane and its components and as
 
 ### gherkin step matchers available
 	| '([^"]*)'                                       		| noop to insert context into behavior def                     |
-	| 'Terraform'                                     		| parses the terraform from your local dir                     |
+	| 'HCL2'                                         		| parses the hcl2 from your local dir                     |
+	| 'Terraform'                                     		| parses the terraform <=.11 from your local dir                     |
 	| 'pending "([^"]*)"$'                            		| mark pending and skip all following steps in the scenario    |
 	| 'a "([^"]*)" of type "([^"]*)"'                 		| matches on types such as resource,data and the resource name |
 	| 'a "([^"]*)" of type "([^"]*)" named "([^"]*)"' 		| matches on types, resource names and instance names          |
