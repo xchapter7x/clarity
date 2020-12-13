@@ -1,3 +1,4 @@
 vendor
 build/clarity*
 cmd/clarity/build
+.DS_Store
