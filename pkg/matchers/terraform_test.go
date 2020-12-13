@@ -37,6 +37,18 @@ func TestMatchers(t *testing.T) {
 					Expect(m.HCLEntries[0].ComponentName).To(BeEquivalentTo(controlHCL[0].ComponentName))
 					Expect(m.HCLEntries[0].InstanceName).To(BeEquivalentTo(controlHCL[0].InstanceName))
 				})
+
+				t.Run("should read files without newlines properly", func(t *testing.T) {
+					err := m.ReadTerraform("testdata/multitf_newline", unmarshal)
+					Expect(err).NotTo(HaveOccurred())
+					sort.SliceStable(controlHCL, func(i, j int) bool { return controlHCL[i].InstanceName < controlHCL[j].InstanceName })
+					sort.SliceStable(m.HCLEntries, func(i, j int) bool { return m.HCLEntries[i].InstanceName < m.HCLEntries[j].InstanceName })
+					Expect(len(m.HCLEntries)).To(Equal(len(controlHCL)))
+					attributesMatch(m.HCLEntries, controlHCL)
+					Expect(m.HCLEntries[0].HCLType).To(BeEquivalentTo(controlHCL[0].HCLType))
+					Expect(m.HCLEntries[0].ComponentName).To(BeEquivalentTo(controlHCL[0].ComponentName))
+					Expect(m.HCLEntries[0].InstanceName).To(BeEquivalentTo(controlHCL[0].InstanceName))
+				})
 			})
 
 			t.Run("m.AOfTypeNamed", func(t *testing.T) {
