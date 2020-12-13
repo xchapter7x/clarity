@@ -232,6 +232,7 @@ func (m *Match) ReadTerraform(tpath string, unmarshal Unmarshaller) error {
 			}
 
 			dirContents += string(contents)
+			dirContents += "\n"
 		}
 	}
 
