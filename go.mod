@@ -8,5 +8,5 @@ require (
 	github.com/hashicorp/hcl v1.0.0
 	github.com/hashicorp/hcl/v2 v2.4.0 // indirect
 	github.com/instrumenta/conftest v0.18.1
-	github.com/onsi/gomega v1.10.2
+	github.com/onsi/gomega v1.14.0
 )
